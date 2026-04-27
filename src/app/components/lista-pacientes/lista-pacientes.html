@@ -1,0 +1,188 @@
+<div class="container-fluid py-4">
+
+  <!-- Header -->
+  <div class="d-flex flex-column flex-sm-row align-items-start align-items-sm-center
+              justify-content-between gap-3 mb-4">
+    <div>
+      <h2 class="fw-bold text-primary mb-0">
+        <i class="bi bi-hospital me-2"></i>Hospital Dr. Sano
+      </h2>
+      <p class="text-muted mb-0">Gestión de Pacientes</p>
+    </div>
+    <button class="btn btn-primary btn-lg" (click)="abrirFormulario()"
+      [disabled]="aforoCompleto()">
+      <i class="bi bi-person-plus-fill me-2"></i>Nuevo Paciente
+    </button>
+  </div>
+
+  <!-- Aforo -->
+  <div class="row g-3 mb-4">
+    <div class="col-6 col-md-3">
+      <div class="card border-0 shadow-sm text-center py-3">
+        <div class="fs-2 fw-bold text-primary">{{ total() }}</div>
+        <div class="text-muted small">Pacientes registrados</div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="card border-0 shadow-sm text-center py-3">
+        <div class="fs-2 fw-bold text-success">{{ disponible() }}</div>
+        <div class="text-muted small">Camas disponibles</div>
+      </div>
+    </div>
+    <div class="col-12 col-md-6">
+      <div class="card border-0 shadow-sm py-3 px-4">
+        <div class="d-flex justify-content-between mb-1">
+          <span class="fw-semibold">Ocupación del hospital</span>
+          <span class="fw-bold">{{ porcentajeAforo() }}%</span>
+        </div>
+        <div class="progress" style="height: 12px;">
+          <div class="progress-bar bg-{{ colorAforo() }}"
+            [style.width.%]="porcentajeAforo()"></div>
+        </div>
+        <small *ngIf="aforoCompleto()" class="text-danger mt-1">
+          <i class="bi bi-exclamation-triangle-fill me-1"></i>Aforo máximo alcanzado
+        </small>
+      </div>
+    </div>
+  </div>
+
+  <!-- Formulario -->
+  @if (mostrarFormulario()) {
+    <app-formulario-paciente
+      [pacienteEditar]="pacienteSeleccionado()"
+      (guardado)="onGuardado()"
+      (cancelar)="onCancelar()">
+    </app-formulario-paciente>
+  }
+
+  <!-- Tabla / Lista -->
+  @if (pacientes().length === 0) {
+    <div class="text-center py-5 text-muted">
+      <i class="bi bi-people fs-1 d-block mb-2"></i>
+      No hay pacientes registrados aún.
+    </div>
+  } @else {
+    <!-- Tabla desktop -->
+    <div class="d-none d-md-block">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th>#</th>
+                  <th>Paciente</th>
+                  <th>DNI</th>
+                  <th>Edad</th>
+                  <th>Género</th>
+                  <th>Teléfono</th>
+                  <th>Diagnóstico</th>
+                  <th>Ingreso</th>
+                  <th class="text-center">Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (p of pacientes(); track p.id) {
+                  <tr>
+                    <td><span class="badge bg-secondary">{{ p.id }}</span></td>
+                    <td>
+                      <div class="fw-semibold">{{ p.nombre }} {{ p.apellido }}</div>
+                      <small class="text-muted">{{ p.email }}</small>
+                    </td>
+                    <td>{{ p.dni }}</td>
+                    <td>{{ calcularEdad(p.fechaNacimiento) }} años</td>
+                    <td>
+                      <span class="badge"
+                        [class.bg-info]="p.genero === 'masculino'"
+                        [class.bg-danger]="p.genero === 'femenino'"
+                        [class.bg-secondary]="p.genero === 'otro'">
+                        {{ p.genero | titlecase }}
+                      </span>
+                    </td>
+                    <td>{{ p.telefono }}</td>
+                    <td>
+                      <span class="text-truncate d-inline-block" style="max-width:180px"
+                        [title]="p.diagnostico">{{ p.diagnostico }}</span>
+                    </td>
+                    <td>{{ p.fechaIngreso }}</td>
+                    <td class="text-center">
+                      <button class="btn btn-sm btn-outline-primary me-1" (click)="editar(p)">
+                        <i class="bi bi-pencil-fill"></i>
+                      </button>
+                      <button class="btn btn-sm btn-outline-danger" (click)="confirmarEliminar(p)">
+                        <i class="bi bi-trash-fill"></i>
+                      </button>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cards mobile -->
+    <div class="d-md-none row g-3">
+      @for (p of pacientes(); track p.id) {
+        <div class="col-12">
+          <div class="card border-0 shadow-sm">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-start">
+                <div>
+                  <h6 class="fw-bold mb-0">{{ p.nombre }} {{ p.apellido }}</h6>
+                  <small class="text-muted">DNI: {{ p.dni }}</small>
+                </div>
+                <span class="badge"
+                  [class.bg-info]="p.genero === 'masculino'"
+                  [class.bg-danger]="p.genero === 'femenino'"
+                  [class.bg-secondary]="p.genero === 'otro'">
+                  {{ p.genero | titlecase }}
+                </span>
+              </div>
+              <hr class="my-2">
+              <div class="row row-cols-2 g-1 small text-muted">
+                <div><i class="bi bi-telephone me-1"></i>{{ p.telefono }}</div>
+                <div><i class="bi bi-envelope me-1"></i>{{ p.email }}</div>
+                <div><i class="bi bi-calendar me-1"></i>{{ calcularEdad(p.fechaNacimiento) }} años</div>
+                <div><i class="bi bi-calendar-check me-1"></i>{{ p.fechaIngreso }}</div>
+                <div class="col-12"><i class="bi bi-clipboard2-pulse me-1"></i>{{ p.diagnostico }}</div>
+              </div>
+              <div class="d-flex gap-2 mt-3">
+                <button class="btn btn-sm btn-outline-primary flex-fill" (click)="editar(p)">
+                  <i class="bi bi-pencil-fill me-1"></i>Editar
+                </button>
+                <button class="btn btn-sm btn-outline-danger flex-fill" (click)="confirmarEliminar(p)">
+                  <i class="bi bi-trash-fill me-1"></i>Eliminar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Modal confirmación eliminar -->
+  @if (pacienteAEliminar()) {
+    <div class="modal-backdrop-custom" (click)="cancelarEliminar()"></div>
+    <div class="modal-custom shadow-lg">
+      <div class="modal-header border-bottom pb-3 mb-3">
+        <h5 class="fw-bold text-danger mb-0">
+          <i class="bi bi-exclamation-triangle-fill me-2"></i>Confirmar eliminación
+        </h5>
+      </div>
+      <p>¿Está seguro que desea eliminar al paciente
+        <strong>{{ pacienteAEliminar()?.nombre }} {{ pacienteAEliminar()?.apellido }}</strong>?
+        Esta acción no se puede deshacer.
+      </p>
+      <div class="d-flex gap-2 justify-content-end mt-3">
+        <button class="btn btn-outline-secondary" (click)="cancelarEliminar()">Cancelar</button>
+        <button class="btn btn-danger" (click)="eliminarConfirmado()">
+          <i class="bi bi-trash-fill me-1"></i>Eliminar
+        </button>
+      </div>
+    </div>
+  }
+
+</div>

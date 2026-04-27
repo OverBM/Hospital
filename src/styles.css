@@ -1,1 +1,22 @@
-/* You can add global styles to this file, and also import other style files */
+body {
+  background-color: #f4f6f9;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.card {
+  border-radius: 0.75rem;
+}
+
+.btn {
+  border-radius: 0.5rem;
+}
+
+.progress {
+  border-radius: 1rem;
+}
+
+.badge {
+  font-size: 0.75rem;
+  padding: 0.4em 0.75em;
+  border-radius: 0.5rem;
+}

@@ -1,0 +1,173 @@
+<div class="form-overlay">
+  <div class="form-panel">
+
+    <div class="form-panel__header">
+      <div class="form-panel__icon">
+        <i class="bi" [class.bi-person-plus-fill]="!modoEdicion" [class.bi-pencil-square]="modoEdicion"></i>
+      </div>
+      <div>
+        <h5 class="form-panel__title">{{ modoEdicion ? 'Editar Paciente' : 'Nuevo Paciente' }}</h5>
+        <p class="form-panel__subtitle">Complete todos los campos requeridos</p>
+      </div>
+      <button class="form-panel__close" type="button" (click)="onCancelar()">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="guardar()" novalidate class="form-panel__body">
+
+      <!-- Sección: Datos personales -->
+      <div class="form-section">
+        <div class="form-section__label">
+          <i class="bi bi-person me-1"></i> Datos personales
+        </div>
+        <div class="row g-3">
+
+          <div class="col-md-6">
+            <label class="field-label">Nombre <span class="req">*</span></label>
+            <input type="text" class="field-input" formControlName="nombre"
+              [class.field-input--error]="campoInvalido('nombre')" placeholder="Juan">
+            @if (campoInvalido('nombre')) {
+              <span class="field-error"><i class="bi bi-exclamation-circle me-1"></i>{{ errorMensaje('nombre') }}</span>
+            }
+          </div>
+
+          <div class="col-md-6">
+            <label class="field-label">Apellido <span class="req">*</span></label>
+            <input type="text" class="field-input" formControlName="apellido"
+              [class.field-input--error]="campoInvalido('apellido')" placeholder="García">
+            @if (campoInvalido('apellido')) {
+              <span class="field-error"><i class="bi bi-exclamation-circle me-1"></i>{{ errorMensaje('apellido') }}</span>
+            }
+          </div>
+
+          <div class="col-md-4">
+            <label class="field-label">DNI <span class="req">*</span></label>
+            <div class="field-icon-wrap">
+              <i class="bi bi-credit-card field-icon"></i>
+              <input type="text" class="field-input field-input--icon" formControlName="dni"
+                [class.field-input--error]="campoInvalido('dni')" placeholder="12345678" maxlength="8">
+            </div>
+            @if (campoInvalido('dni')) {
+              <span class="field-error"><i class="bi bi-exclamation-circle me-1"></i>{{ errorMensaje('dni') }}</span>
+            }
+          </div>
+
+          <div class="col-md-4">
+            <label class="field-label">Fecha de nacimiento <span class="req">*</span></label>
+            <input type="date" class="field-input" formControlName="fechaNacimiento"
+              [class.field-input--error]="campoInvalido('fechaNacimiento')"
+              [max]="fechaMaxHoy">
+            @if (campoInvalido('fechaNacimiento')) {
+              <span class="field-error"><i class="bi bi-exclamation-circle me-1"></i>{{ errorMensaje('fechaNacimiento') }}</span>
+            }
+          </div>
+
+          <div class="col-md-4">
+            <label class="field-label">Género <span class="req">*</span></label>
+            <select class="field-input" formControlName="genero"
+              [class.field-input--error]="campoInvalido('genero')">
+              <option value="">Seleccionar...</option>
+              <option value="masculino">Masculino</option>
+              <option value="femenino">Femenino</option>
+              <option value="otro">Otro</option>
+            </select>
+            @if (campoInvalido('genero')) {
+              <span class="field-error"><i class="bi bi-exclamation-circle me-1"></i>{{ errorMensaje('genero') }}</span>
+            }
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Sección: Contacto -->
+      <div class="form-section">
+        <div class="form-section__label">
+          <i class="bi bi-telephone me-1"></i> Contacto
+        </div>
+        <div class="row g-3">
+
+          <div class="col-md-6">
+            <label class="field-label">Teléfono <span class="req">*</span></label>
+            <div class="field-icon-wrap">
+              <i class="bi bi-telephone field-icon"></i>
+              <input type="text" class="field-input field-input--icon" formControlName="telefono"
+                [class.field-input--error]="campoInvalido('telefono')" placeholder="987654321" maxlength="9">
+            </div>
+            @if (campoInvalido('telefono')) {
+              <span class="field-error"><i class="bi bi-exclamation-circle me-1"></i>{{ errorMensaje('telefono') }}</span>
+            }
+          </div>
+
+          <div class="col-md-6">
+            <label class="field-label">Correo electrónico <span class="req">*</span></label>
+            <div class="field-icon-wrap">
+              <i class="bi bi-envelope field-icon"></i>
+              <input type="email" class="field-input field-input--icon" formControlName="email"
+                [class.field-input--error]="campoInvalido('email')" placeholder="correo@ejemplo.com">
+            </div>
+            @if (campoInvalido('email')) {
+              <span class="field-error"><i class="bi bi-exclamation-circle me-1"></i>{{ errorMensaje('email') }}</span>
+            }
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Sección: Clínico -->
+      <div class="form-section">
+        <div class="form-section__label">
+          <i class="bi bi-clipboard2-pulse me-1"></i> Datos clínicos
+        </div>
+        <div class="row g-3">
+
+          <div class="col-md-5">
+            <label class="field-label">Fecha de ingreso <span class="req">*</span></label>
+            <input type="date" class="field-input" formControlName="fechaIngreso"
+              [class.field-input--error]="campoInvalido('fechaIngreso')"
+              [max]="fechaMaxHoy">
+            @if (campoInvalido('fechaIngreso')) {
+              <span class="field-error"><i class="bi bi-exclamation-circle me-1"></i>{{ errorMensaje('fechaIngreso') }}</span>
+            }
+          </div>
+
+          <div class="col-12">
+            <label class="field-label">Diagnóstico <span class="req">*</span></label>
+            <textarea class="field-input field-textarea" formControlName="diagnostico" rows="3"
+              [class.field-input--error]="campoInvalido('diagnostico')"
+              placeholder="Describa el diagnóstico médico del paciente..."></textarea>
+            <div class="d-flex justify-content-between">
+              @if (campoInvalido('diagnostico')) {
+                <span class="field-error"><i class="bi bi-exclamation-circle me-1"></i>{{ errorMensaje('diagnostico') }}</span>
+              } @else {
+                <span></span>
+              }
+              <span class="field-counter">{{ f['diagnostico'].value?.length || 0 }}/300</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Error cruzado de fechas -->
+      @if (form.errors?.['ingresoAntesNacimiento'] && (f['fechaIngreso'].dirty || f['fechaNacimiento'].dirty)) {
+        <div class="alert-cross-error">
+          <i class="bi bi-exclamation-triangle-fill me-2"></i>
+          {{ errorFormulario() }}
+        </div>
+      }
+
+      <!-- Botones -->
+      <div class="form-panel__footer">
+        <button type="button" class="btn-cancel" (click)="onCancelar()">
+          Cancelar
+        </button>
+        <button type="submit" class="btn-save">
+          <i class="bi" [class.bi-check-lg]="!modoEdicion" [class.bi-arrow-repeat]="modoEdicion" style="margin-right:6px"></i>
+          {{ modoEdicion ? 'Actualizar paciente' : 'Registrar paciente' }}
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>
